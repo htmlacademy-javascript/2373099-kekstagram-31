@@ -40,21 +40,21 @@ const getRandomArrayElement = (elements) => elements[getRandomInteger(0, element
 
 let photoId = 1;
 let photoUrl = 1;
-let commentsId = 0;
+let commentId = 0;
 
 const descriptionPhoto = () => ({
-  url: `photos/${ photoUrl++ }.jpg`,
+  url: `photos/${photoUrl++}.jpg`,
   id: photoId++,
   description: getRandomArrayElement(DESCRIPTION),
   likes: getRandomNumberLikes(),
   comments: [{
-    id: commentsId++,
-    avatar: `img/avatar-${ getRandomNumberAvatars() }.svg`,
+    id: commentId++,
+    avatar: `img/avatar-${getRandomNumberAvatars()}.svg`,
     message: getRandomArrayElement(MESSAGE),
     name: getRandomArrayElement(NAME),
   }]
 });
 
-const comment = Array.from({length: 25}, descriptionPhoto);
+const comment = Array.from({ length: 25 }, descriptionPhoto);
 
 console.log(comment);
