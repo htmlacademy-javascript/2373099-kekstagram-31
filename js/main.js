@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const NAME = [
   'Тор Одинсон',
   'Индиана Джонс',
@@ -41,7 +42,7 @@ let photoId = 1;
 let commentId = 0;
 
 const descriptionPhoto = () => ({
-  url: 'photo/${ photoUrl++ }.jpg',
+  url: `photos/${ photoUrl++ }.jpg`,
   id: photoId++,
   likes: getRandomNumberLikes(),
   description: getRandomArrayElement(DESCRIPTION),
@@ -58,4 +59,4 @@ const descriptionPhoto = () => ({
 
 const comment = Array.from({length: 25}, descriptionPhoto);
 
-comment();
+console.log(comment);
