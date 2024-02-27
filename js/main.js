@@ -35,7 +35,7 @@ const getRandomInteger = (a, b) => {
 };
 
 const getRandomNumberLikes = () => getRandomInteger(15, 200);
-const getRandomNumberavatars = () => getRandomInteger(1, 6);
+const getRandomNumberAvatars = () => getRandomInteger(1, 6);
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
 let photoId = 1;
@@ -49,7 +49,7 @@ const descriptionPhoto = () => ({
   likes: getRandomNumberLikes(),
   comments: [{
     id: commentsId++,
-    avatar: `img/avatar-${ getRandomNumberavatars() }.svg`,
+    avatar: `img/avatar-${ getRandomNumberAvatars() }.svg`,
     message: getRandomArrayElement(MESSAGE),
     name: getRandomArrayElement(NAME),
   }]
