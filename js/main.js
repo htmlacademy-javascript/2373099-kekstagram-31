@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-import {comment} from'./data.js';
+import {makeImages} from './miniatures.js';
 
-console.log (
-  comment()
-);
+makeImages();
