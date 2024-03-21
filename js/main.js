@@ -1,3 +1,7 @@
-import {makeImages} from './miniatures.js';
+import {imageItems} from './miniatures.js';
+import {imagesGallery} from './photos.js';
+import { makeGallery } from './mock-data.js';
 
-makeImages();
+const photos = makeGallery();
+imageItems(photos);
+imagesGallery(photos);
