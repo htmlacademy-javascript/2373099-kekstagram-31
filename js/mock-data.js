@@ -1,4 +1,10 @@
-import {getRandomNumberLikes, getRandomNumberAvatars, getRandomArrayElement} from './util.js';
+import {getRandomInteger, getRandomIntegerFromRange, createIdGenerator} from './util.js';
+
+const gallerySize = 25;
+const likeMin = 15;
+const likeMax = 200;
+const avatar = 6;
+const commentMax = 30;
 
 const NAME = [
   'Тор Одинсон',
@@ -27,23 +33,27 @@ const MESSAGE = [
   'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
 ];
 
-let photoId = 1;
-let photoUrl = 1;
-let commentId = 0;
+const generateId = createIdGenerator();
+const generateUrl = createIdGenerator();
 
-const descriptionPhoto = () => ({
-  url: `photos/${photoUrl++}.jpg`,
-  id: photoId++,
-  description: getRandomArrayElement(DESCRIPTION),
-  likes: getRandomNumberLikes(),
-  comment: [{
-    id: commentId++,
-    avatar: `img/avatar-${getRandomNumberAvatars()}.svg`,
-    message: getRandomArrayElement(MESSAGE),
-    name: getRandomArrayElement(NAME),
-  }]
+const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
+
+const makeComment = () => ({
+  id: getRandomIntegerFromRange(1, gallerySize * commentMax)(),
+  avatar: `img/avatar-${getRandomIntegerFromRange(1, avatar)()}.svg`,
+  message: getRandomArrayElement(MESSAGE),
+  name: getRandomArrayElement(NAME),
 });
 
-const comment = () => Array.from({ length: 25 }, descriptionPhoto);
 
-export{comment};
+const makePost = () => ({
+  id: generateId(),
+  url: `photos/${generateUrl()}.jpg`,
+  description: getRandomArrayElement(DESCRIPTION),
+  likes: getRandomInteger(likeMin, likeMax),
+  comments: Array.from({length: getRandomInteger(0, commentMax)}, makeComment),
+});
+
+const makeGallery = () => Array.from({length: gallerySize}, makePost);
+
+export{makeGallery};
