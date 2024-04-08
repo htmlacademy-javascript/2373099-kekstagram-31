@@ -57,4 +57,4 @@ const renderComments = (comments, isFirstLoading) => {
 commentsLoader.addEventListener('click', () => {
   renderComments(allComments);
 });
-export {removeComments, renderComments};
+export { removeComments, renderComments };

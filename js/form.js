@@ -1,7 +1,10 @@
-import {isEscapeKey} from './util.js';
-import { validateForm, resetValidator } from '../validate-form.js';
-import {resetSample} from './sample.js';
-import {resetFilters} from './filters.js';
+import { isEscapeKey } from './util.js';
+import { resetValidator } from './validate-form.js';
+import { resetSample } from './sample.js';
+import { resetFilters } from './filters-effect.js';
+import { dataErrorMessage } from './message.js';
+
+const FILE_TYPES = ['jpg', 'jpeg', 'png'];
 
 const body = document.body;
 const form = document.querySelector('.img-upload__form');
@@ -12,29 +15,52 @@ const uploadModalClose = uploadOverlay.querySelector('.img-upload__cancel');
 const hashtagsField = uploadOverlay.querySelector('.text__hashtags');
 const descriptionField = uploadOverlay.querySelector('.text__description');
 
-const onUploadModalCloseClick = () => {
-  closeBigImage();
+const preview = uploadOverlay.querySelector('.img-upload__preview img');
+const effectsPreviews = uploadOverlay.querySelectorAll('.effects__preview');
+
+const onPictureUpload = () => {
+  const file = uploadInput.files[0];
+  const fileName = file.name.toLowerCase();
+  const fileExt = fileName.split('.').pop();
+  const matches = FILE_TYPES.includes(fileExt);
+
+  if(!matches) {
+    dataErrorMessage('Неверный тип файла');
+    return;
+  }
+
+  preview.src = URL.createObjectURL(file);
+  effectsPreviews.forEach((item) => {
+    item.style.backgroundImage = `url('${preview.src}')`;
+  });
+
+  openUploadBigImage();
 };
+const onUploadModalCloseClick = () => {
+  closeUploadBigImage();
+};
+
+const isErrorMessageShown = () => Boolean(document.querySelector('.error'));
 
 const isTextFieldFocused = () =>
   document.activeElement === hashtagsField ||
   document.activeElement === descriptionField;
 
 function onDocumentKeydown(evt) {
-  if (isEscapeKey(evt) && !isTextFieldFocused()) {
+  if (isEscapeKey(evt) && !isTextFieldFocused() && !isErrorMessageShown()) {
     evt.preventDefault();
-    closeBigImage();
+    closeUploadBigImage();
   }
 }
 
-function openBigImage() {
+function openUploadBigImage() {
   uploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   uploadModalClose.addEventListener('click', onUploadModalCloseClick);
   document.addEventListener('keydown', onDocumentKeydown);
 }
 
-function closeBigImage() {
+function closeUploadBigImage() {
   uploadInput.value = '';
   hashtagsField.value = '';
   descriptionField.value = '';
@@ -47,6 +73,7 @@ function closeBigImage() {
   document.removeEventListener('keydown', onDocumentKeydown);
 }
 
-uploadInput.addEventListener('change', openBigImage);
 
-validateForm();
+uploadInput.addEventListener('change', onPictureUpload);
+
+export { closeUploadBigImage };

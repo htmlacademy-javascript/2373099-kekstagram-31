@@ -1,11 +1,11 @@
-import {removeComments, renderComments} from './comment.js';
+import { removeComments, renderComments } from './comment.js';
 import { isEscapeKey } from './util.js';
 
 const body = document.body;
 const bigImage = document.querySelector('.big-picture');
-const bigImageClose = bigImage.querySelector('.big-picture__cancel');
+const bigImageCloseBtn = bigImage.querySelector('.big-picture__cancel');
 
-const renderModal = ({url, likes, comments, description}) => {
+const renderImageModal = ({url, likes, comments, description}) => {
   const image = bigImage.querySelector('.big-picture__img img');
   image.src = url;
   image.alt = description;
@@ -14,8 +14,11 @@ const renderModal = ({url, likes, comments, description}) => {
   bigImage.querySelector('.social__caption').textContent = description;
   bigImage.querySelector('.social__comment-total-count').textContent = comments.length;
 
-  removeComments();
-  renderComments(comments, true);
+  renderComments();
+};
+
+const onBigImageCloseBtnClick = () => {
+  closeBigImage();
 };
 
 function onDocumentKeydown (evt) {
@@ -26,8 +29,10 @@ function onDocumentKeydown (evt) {
 }
 
 function closeBigImage () {
+  removeComments();
   bigImage.classList.add('hidden');
   body.classList.remove('modal-open');
+  bigImageCloseBtn.removeEventListener('click', onBigImageCloseBtnClick);
   document.removeEventListener('keydown', onDocumentKeydown);
 }
 
@@ -35,13 +40,9 @@ function openBigImage (photo) {
   bigImage.classList.remove('hidden');
   body.classList.add('modal-open');
 
-  renderModal(photo);
-
+  renderImageModal(photo);
+  bigImageCloseBtn.addEventListener('click', onBigImageCloseBtnClick);
   document.addEventListener('keydown', onDocumentKeydown);
 }
-
-bigImageClose.addEventListener('click', () => {
-  closeBigImage ();
-});
 
 export { openBigImage };

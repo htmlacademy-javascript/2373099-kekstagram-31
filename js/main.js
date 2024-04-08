@@ -1,8 +1,18 @@
-import { imageItems } from './miniatures.js';
+import { renderImageItems } from './miniatures.js';
 import { imagesGallery } from './photos.js';
-import { makeGallery } from './mock-data.js';
-import './form.js';
+import { setFormSubmit } from './validate-form.js';
+import { getData } from './api.js';
+import { dataErrorMessage } from './message.js';
+import { initFilter } from './filters.js';
 
-const photos = makeGallery();
-imageItems(photos);
-imagesGallery(photos);
+getData()
+  .then((photos) => {
+    renderImageItems(photos);
+    imagesGallery(photos);
+    initFilter(renderImageItems, photos);
+  })
+  .catch(() => {
+    dataErrorMessage();
+  });
+
+setFormSubmit();

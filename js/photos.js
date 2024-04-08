@@ -18,4 +18,4 @@ const imagesGallery = (photos) => {
   });
 };
 
-export {imagesGallery};
+export { imagesGallery };

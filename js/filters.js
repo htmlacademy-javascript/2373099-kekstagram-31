@@ -1,125 +1,61 @@
-const FILTERS = [
-  {
-    name: 'none',
-    filter: 'none',
-    min: 0,
-    max: 1,
-    unit: '',
-  },
-  {
-    name: 'chrome',
-    filter: 'grayscale',
-    min: 0,
-    max: 1,
-    step: 0.1,
-    unit: '',
-  },
-  {
-    name: 'sepia',
-    filter: 'sepia',
-    min: 0,
-    max: 1,
-    step: 0.1,
-    unit: '',
-  },
-  {
-    name: 'marvin',
-    filter: 'invert',
-    min: 0,
-    max: 100,
-    step: 1,
-    unit: '%',
-  },
-  {
-    name: 'phobos',
-    filter: 'blur',
-    min: 0,
-    max: 3,
-    step: 0.1,
-    unit: 'px',
-  },
-  {
-    name: 'heat',
-    filter: 'brightness',
-    min: 1,
-    max: 3,
-    step: 0.1,
-    unit: '',
-  }
-];
+import { debounce } from './util.js';
+import { removeImageItems } from './miniatures.js';
 
-const DEFAULT_FILTER = FILTERS[0];
+const RANDOM_PICTURES_AMOUNT = 10;
 
-const preview = document.querySelector('.img-upload__preview img');
-const sliderContainer = document.querySelector('.img-upload__effect-level');
-const sliderElement = sliderContainer.querySelector('.effect-level__slider');
-const effectValue = sliderContainer.querySelector('.effect-level__value');
-const effectsContainer = document.querySelector('.effects');
+const RENDER_DELAY = 500;
+const Filter = {
+  DEFAULT: 'filter-default',
+  RANDOM: 'filter-random',
+  DISCUSSED: 'filter-discussed',
+};
+const ACTIVE_BUTTON_CLASS = 'img-filters__button--active';
+const filters = document.querySelector('.img-filters');
+let currentActiveButton = filters.querySelector('#filter-default');
 
-let currentFilter = DEFAULT_FILTER;
-
-const isDefault = () => currentFilter.name === DEFAULT_FILTER.name;
-
-const showSlider = () => {
-  sliderContainer.classList.remove('hidden');
+const showFilters = () => {
+  filters.classList.remove('img-filters--inactive');
 };
 
-const hideSlider = () => {
-  sliderContainer.classList.add('hidden');
-};
+const sortByComments = (photoA, photoB) => photoB.comments.length - photoA.comments.length;
 
-noUiSlider.create(sliderElement, {
-  range: {
-    min: DEFAULT_FILTER.min,
-    max: DEFAULT_FILTER.max,
-  },
-  start: DEFAULT_FILTER.max,
-  step: DEFAULT_FILTER.step,
-  connect: 'lower',
-});
-const updateSliderOptions = () => {
+const sortRandomly = () => 0.5 - Math.random();
 
-  sliderElement.noUiSlider.updateOptions({
-    range: {
-      min: currentFilter.min,
-      max: currentFilter.max,
-    },
-    step: currentFilter.step,
-    start: currentFilter.max,
-  });
+const getFilteredPictures = (filter, photos) => {
+  switch (filter) {
+    case Filter.RANDOM: {
+      return photos.toSorted(sortRandomly).slice(0, RANDOM_PICTURES_AMOUNT);
+    }
 
-  if (isDefault()) {
-    hideSlider();
-  } else {
-    showSlider();
+    case Filter.DISCUSSED:
+      return photos.toSorted(sortByComments);
+
+    default:
+      return photos;
   }
 };
 
-const resetFilters = () => {
-  currentFilter = DEFAULT_FILTER;
+const filterPictures = (evt, cb, photos) => {
+  if (evt.target.classList.contains('img-filters__button')) {
+    currentActiveButton.classList.remove(ACTIVE_BUTTON_CLASS);
+    currentActiveButton = evt.target;
+    currentActiveButton.classList.add(ACTIVE_BUTTON_CLASS);
 
-  updateSliderOptions();
-};
-
-const onEffectChange = (evt) => {
-  if (!evt.target.classList.contains('effects__radio')) {
-    return;
+    const filtersData = getFilteredPictures(evt.target.id, photos);
+    cb(filtersData);
   }
-
-  currentFilter = FILTERS.find((effect) => effect.name === evt.target.value);
-
-  updateSliderOptions();
 };
 
-const onSliderUpdate = () => {
-  const sliderValue = sliderElement.noUiSlider.get();
-  effectValue.value = sliderValue;
+const initFilter = (cb, photos) => {
+  showFilters();
 
-  preview.style.filter = isDefault() ? DEFAULT_FILTER.filter : `${currentFilter.filter}(${sliderValue}${currentFilter.unit})`;
+  const getDebouncedFunction = debounce((data) => {
+    removeImageItems();
+    cb(data);
+  }, RENDER_DELAY);
+
+  const onFilterBtnClick = (evt) => filterPictures(evt, getDebouncedFunction, photos);
+  filters.addEventListener('click', onFilterBtnClick);
 };
 
-hideSlider();
-effectsContainer.addEventListener('change', onEffectChange);
-sliderElement.noUiSlider.on('update', onSliderUpdate);
-
-export { resetFilters };
+export { initFilter };

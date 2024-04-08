@@ -15,7 +15,7 @@ const createImageItem = ({ url, comments, description, likes, id }) => {
   return imageItem;
 };
 
-const imageItems = (pictures) => {
+const renderImageItems = (pictures) => {
   const fragment = document.createDocumentFragment();
   pictures.forEach((picture) => {
     const thumbnail = createImageItem(picture);
@@ -25,4 +25,8 @@ const imageItems = (pictures) => {
   imageContainer.append(fragment);
 };
 
-export { imageItems };
+const removeImageItems = () => {
+  document.querySelectorAll('.picture').forEach((picture) => picture.remove());
+};
+
+export { renderImageItems, removeImageItems };
