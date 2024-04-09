@@ -1,9 +1,9 @@
 import { openBigImage } from './big-photos.js';
 
-const imageContainer = document.querySelector('.pictures');
+const container = document.querySelector('.pictures');
 
-const imagesGallery = (photos) => {
-  imageContainer.addEventListener('click', (evt) => {
+const miniaturesClick = (photos) => {
+  container.addEventListener('click', (evt) => {
     const targetPicture = evt.target.closest('.picture');
 
     if(!targetPicture) {
@@ -18,4 +18,4 @@ const imagesGallery = (photos) => {
   });
 };
 
-export {imagesGallery};
+export { miniaturesClick };

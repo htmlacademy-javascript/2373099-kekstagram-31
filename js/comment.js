@@ -1,27 +1,16 @@
-const COMMENTS_LOADING_STEP = 5;
+import { COMMENTS_LOADING_STEP } from './consts.js';
+
+let currentCount = 0;
+let comments = [];
 
 const bigImage = document.querySelector('.big-picture');
 const container = bigImage.querySelector('.social__comments');
 const template = document.querySelector('#comment').content.querySelector('.social__comment');
-
-let shownCommentsCounter = 0;
-let allComments = [];
 const commentsLoader = bigImage.querySelector('.comments-loader');
 const shownCommentsElement = bigImage.querySelector('.social__comment-shown-count');
+container.innerHTML = '';
 
-const removeComments = () => {
-  container.innerHTML = '';
-};
-
-const checkMoreComments = () => {
-  if (allComments.length <= shownCommentsCounter) {
-    commentsLoader.classList.add('hidden');
-  } else {
-    commentsLoader.classList.remove('hidden');
-  }
-};
-
-const createComment = ({avatar, name, message}) => {
+const createComment = ({ avatar, name, message }) => {
   const comment = template.cloneNode(true);
   const author = comment.querySelector('.social__picture');
 
@@ -32,29 +21,43 @@ const createComment = ({avatar, name, message}) => {
   return comment;
 };
 
-const renderComments = (comments, isFirstLoading) => {
-  if (isFirstLoading){
-    shownCommentsCounter = 0;
-    allComments = comments;
-  }
-
-  const showMoreCounter = Math.min(shownCommentsCounter + COMMENTS_LOADING_STEP, allComments.length);
-
+const renderNextComments = () => {
   const fragment = document.createDocumentFragment();
+  const renderedComments = comments.slice(currentCount, currentCount + COMMENTS_LOADING_STEP);
+  const renderedCommentsLength = renderedComments.length + currentCount;
 
-  for (let i = shownCommentsCounter; i < showMoreCounter; i++) {
-    const comment = createComment(comments[i]);
-    fragment.append(comment);
-  }
+  renderedComments.forEach((comment) => {
+    const commentItem = createComment(comment);
+    fragment.append(commentItem);
+  });
 
   container.append(fragment);
 
-  shownCommentsCounter = showMoreCounter;
-  shownCommentsElement.textContent = shownCommentsCounter;
-  checkMoreComments();
+  shownCommentsElement.textContent = renderedCommentsLength;
+
+  if (renderedCommentsLength >= comments.length) {
+    commentsLoader.classList.add('hidden');
+  }
+
+  currentCount += COMMENTS_LOADING_STEP;
 };
 
-commentsLoader.addEventListener('click', () => {
-  renderComments(allComments);
-});
-export {removeComments, renderComments};
+const onCommentsLoaderClick = () => {
+  renderNextComments();
+};
+
+const removeComments = () => {
+  currentCount = 0;
+  container.innerHTML = '';
+  commentsLoader.classList.remove('hidden');
+  commentsLoader.removeEventListener('click', onCommentsLoaderClick);
+};
+
+const renderComments = (photoComments) => {
+  comments = photoComments;
+  renderNextComments();
+
+  commentsLoader.addEventListener('click', onCommentsLoaderClick);
+};
+
+export { removeComments, renderComments };

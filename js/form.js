@@ -1,5 +1,9 @@
-import {isEscapeKey} from './util.js';
-import { validateForm, resetValidator } from '../validate-form.js';
+import { FILE_TYPES } from './consts.js';
+import { isEscapeKey } from './util.js';
+import { resetValidator } from './validate-form.js';
+import { resetSample } from './sample.js';
+import { resetFilters } from './filters-effect.js';
+import { dataErrorMessage } from './message.js';
 
 const body = document.body;
 const form = document.querySelector('.img-upload__form');
@@ -10,35 +14,63 @@ const uploadModalClose = uploadOverlay.querySelector('.img-upload__cancel');
 const hashtagsField = uploadOverlay.querySelector('.text__hashtags');
 const descriptionField = uploadOverlay.querySelector('.text__description');
 
+const preview = uploadOverlay.querySelector('.img-upload__preview img');
+const effectsPreviews = uploadOverlay.querySelectorAll('.effects__preview');
+
+const onUploadInputChange = () => {
+  const file = uploadInput.files[0];
+  const fileName = file.name.toLowerCase();
+  const fileExt = fileName.split('.').pop();
+  const matches = FILE_TYPES.includes(fileExt);
+
+  if(!matches) {
+    dataErrorMessage('Неверный тип файла');
+    return;
+  }
+
+  preview.src = URL.createObjectURL(file);
+  effectsPreviews.forEach((item) => {
+    item.style.backgroundImage = `url('${preview.src}')`;
+  });
+
+  openUploadModal();
+};
+
 const isTextFieldFocused = () =>
   document.activeElement === hashtagsField ||
   document.activeElement === descriptionField;
 
+const isErrorMessageShown = () => Boolean(document.querySelector('.error'));
+
+const onUploadModalCloseClick = () => {
+  closeUploadModal();
+};
+
 function onDocumentKeydown(evt) {
-  if (isEscapeKey(evt) && !isTextFieldFocused()) {
+  if (isEscapeKey(evt) && !isTextFieldFocused() && !isErrorMessageShown()) {
     evt.preventDefault();
-    closeBigImage();
+    closeUploadModal();
   }
 }
 
-function openBigImage() {
+function openUploadModal() {
   uploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
+  uploadModalClose.addEventListener('click', onUploadModalCloseClick);
   document.addEventListener('keydown', onDocumentKeydown);
 }
 
-function closeBigImage() {
-  uploadInput.value = '';
-  hashtagsField.value = '';
-  descriptionField.value = '';
+function closeUploadModal() {
+  form.reset();
   resetValidator();
+  resetSample();
+  resetFilters();
   uploadOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
+  uploadModalClose.removeEventListener('click', onUploadModalCloseClick);
   document.removeEventListener('keydown', onDocumentKeydown);
 }
 
-uploadInput.addEventListener('change', openBigImage);
+uploadInput.addEventListener('change', onUploadInputChange);
 
-uploadModalClose.addEventListener('click', closeBigImage);
-
-validateForm();
+export { closeUploadModal };
