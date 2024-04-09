@@ -1,6 +1,6 @@
+import { MESSAGE_SHOW_TIME } from './consts.js';
 import { isEscapeKey } from './util.js';
 
-const MESSAGE_SHOW_TIME = 5000;
 const messageErrorTemplate = document.querySelector('#data-error').content;
 
 const dataErrorMessage = (errorMessage) => {
@@ -39,6 +39,10 @@ function onDocumentKeydown(evt) {
   }
 }
 
+function onModalButtonClick() {
+  closeActiveModal();
+}
+
 const showModal = (type) => {
   activeModalType = type;
   document.addEventListener('click', onOuterBodyClick);
@@ -57,7 +61,7 @@ function createModalElement(type) {
   const template = document.querySelector(`#${type}`).content;
   const modalElement = template.querySelector(`.${type}`).cloneNode(true);
 
-  modalElement.querySelector(`.${type}__button`).addEventListener('click', closeActiveModal);
+  modalElement.querySelector(`.${type}__button`).addEventListener('click', onModalButtonClick);
 
   return modalElement;
 }

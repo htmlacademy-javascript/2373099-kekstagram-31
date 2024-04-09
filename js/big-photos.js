@@ -14,7 +14,7 @@ const renderImageModal = ({url, likes, comments, description}) => {
   bigImage.querySelector('.social__caption').textContent = description;
   bigImage.querySelector('.social__comment-total-count').textContent = comments.length;
 
-  renderComments();
+  renderComments(comments);
 };
 
 const onBigImageCloseBtnClick = () => {
@@ -39,7 +39,6 @@ function closeBigImage () {
 function openBigImage (photo) {
   bigImage.classList.remove('hidden');
   body.classList.add('modal-open');
-
   renderImageModal(photo);
   bigImageCloseBtn.addEventListener('click', onBigImageCloseBtnClick);
   document.addEventListener('keydown', onDocumentKeydown);

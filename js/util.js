@@ -1,5 +1,4 @@
-
-const DEBOUNCE_DELAY = 500;
+import { DEBOUNCE_DELAY } from './consts.js';
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
@@ -12,4 +11,3 @@ function debounce (callback, timeoutDelay = DEBOUNCE_DELAY) {
 }
 
 export { isEscapeKey, debounce };
-

@@ -1,7 +1,4 @@
-const SAMPLE_STEP = 25;
-const MIN_SAMPLE_VALUE = 25;
-const MAX_SAMPLE_VALUE = 100;
-const DEFAULT_SAMPLE_VALUE = MAX_SAMPLE_VALUE;
+import { SAMPLE_STEP, MIN_SAMPLE_VALUE, MAX_SAMPLE_VALUE, DEFAULT_SAMPLE_VALUE } from './consts.js';
 
 const sample = document.querySelector('.img-upload__scale');
 const zoomOutButton = sample.querySelector('.scale__control--smaller');
@@ -26,9 +23,17 @@ const zoomOut = () => {
   );
 };
 
+const onZoomInButtonClick = () => {
+  zoomIn();
+};
+
+const onZoomOutButtonClick = () => {
+  zoomOut();
+};
+
 const resetSample = () => samplePreview(DEFAULT_SAMPLE_VALUE);
 
-zoomInButton.addEventListener('click', zoomIn);
-zoomOutButton.addEventListener('click', zoomOut);
+zoomInButton.addEventListener('click', onZoomInButtonClick);
+zoomOutButton.addEventListener('click', onZoomOutButtonClick);
 
 export { resetSample };

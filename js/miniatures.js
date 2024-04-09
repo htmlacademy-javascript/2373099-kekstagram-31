@@ -3,23 +3,24 @@ const imageTemplate = document.querySelector('#picture').content.querySelector('
 
 const createImageItem = ({ url, comments, description, likes, id }) => {
   const imageItem = imageTemplate.cloneNode(true);
-  const newPictureImage = imageItem.querySelector('.picture__img');
+  const image = imageItem.querySelector('.picture__img');
 
-  newPictureImage.src = url;
-  newPictureImage.alt = description;
+  image.src = url;
+  image.alt = description;
 
   imageItem.href = url;
   imageItem.dataset.id = id;
   imageItem.querySelector('.picture__likes').textContent = likes;
   imageItem.querySelector('.picture__comments').textContent = comments.length;
+
   return imageItem;
 };
 
 const renderImageItems = (pictures) => {
   const fragment = document.createDocumentFragment();
   pictures.forEach((picture) => {
-    const thumbnail = createImageItem(picture);
-    fragment.append(thumbnail);
+    const imageItem = createImageItem(picture);
+    fragment.append(imageItem);
   });
 
   imageContainer.append(fragment);
